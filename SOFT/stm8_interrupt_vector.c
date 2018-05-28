@@ -17,6 +17,8 @@ struct interrupt_vector {
 	return;
 }
 
+extern @far @interrupt void TIM4_UPD_Interrupt (void);
+
 extern void _stext();     /* startup routine */
 
 struct interrupt_vector const _vectab[] = {
@@ -45,7 +47,7 @@ struct interrupt_vector const _vectab[] = {
 	{0x82, NonHandledInterrupt}, /* irq20 */
 	{0x82, NonHandledInterrupt}, /* irq21 */
 	{0x82, NonHandledInterrupt}, /* irq22 */
-	{0x82, NonHandledInterrupt}, /* irq23 */
+	{0x82, TIM4_UPD_Interrupt},  /* irq23 */
 	{0x82, NonHandledInterrupt}, /* irq24 */
 	{0x82, NonHandledInterrupt}, /* irq25 */
 	{0x82, NonHandledInterrupt}, /* irq26 */
