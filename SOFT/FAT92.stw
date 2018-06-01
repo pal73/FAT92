@@ -6,6 +6,14 @@ Keyword=ST7Workspace-V0.7
 [Project0]
 Filename=fat92.stp
 Dependencies=
+
+[Project1]
+Filename=..\..\fat90_dev\soft\dat\fat90_dat.stp
+Dependencies=
+
+[Project2]
+Filename=..\..\fat42_dev\soft_v2\fat42_v2.stp
+Dependencies=
 [Options]
 ActiveProject=fat92
 ActiveConfig=Debug
