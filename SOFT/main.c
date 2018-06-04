@@ -112,7 +112,7 @@ CLK->CKDIVR=0;
 
 t4_init();
 
-adc1_init();
+//adc1_init();
 enableInterrupts();
 while (1)
 	{
