@@ -3,7 +3,8 @@
 @near bool b100Hz=0,b10Hz=0,b5Hz=0,b1Hz=0;
 @near static char t0_cnt0=0,t0_cnt1=0,t0_cnt2=0,t0_cnt3=0;
 
-signed long temp_adc;
+//signed long temp_adc;
+unsigned short temp_adc;
 
 //-----------------------------------------------
 void adc1_init(void)
@@ -11,21 +12,21 @@ void adc1_init(void)
 
 
 
-GPIOD->DDR&=~(1<<5);
-GPIOD->CR1&=~(1<<5);
-GPIOD->CR2&=~(1<<5);
+//GPIOD->DDR&=~(1<<5);
+//GPIOD->CR1&=~(1<<5);
+//GPIOD->CR2&=~(1<<5);
 
 GPIOD->DDR&=~(1<<6);
 GPIOD->CR1&=~(1<<6);
 GPIOD->CR2&=~(1<<6);
 
-GPIOC->DDR&=~(1<<4);
-GPIOC->CR1&=~(1<<4);
-GPIOC->CR2&=~(1<<4);
+//GPIOC->DDR&=~(1<<4);
+//GPIOC->CR1&=~(1<<4);
+//GPIOC->CR2&=~(1<<4);
 
-GPIOB->DDR&=~(1<<7);
-GPIOB->CR1&=~(1<<7);
-GPIOB->CR2&=~(1<<7);
+//GPIOB->DDR&=~(1<<7);
+//GPIOB->CR1&=~(1<<7);
+//GPIOB->CR2&=~(1<<7);
 
 
 
@@ -95,12 +96,12 @@ return;
 //***********************************************
 @far @interrupt void ADC1_EOC_Interrupt (void) {
 
-signed long temp_adc;
+
 
 
 ADC1->CSR&=~(1<<7);
 
-temp_adc=(((signed long)(ADC1->DRH))*256)+((signed long)(ADC1->DRL));
+temp_adc=(ADC1->DRH);
 temp_adc=(((signed long)(ADC1->DRH))*256)+((signed long)(ADC1->DRL));
 }
 
@@ -112,7 +113,7 @@ CLK->CKDIVR=0;
 
 t4_init();
 
-//adc1_init();
+adc1_init();
 enableInterrupts();
 while (1)
 	{
@@ -122,7 +123,9 @@ while (1)
 		GPIOB->DDR|=(1<<5);
 		GPIOB->CR1&=~(1<<5);
 		GPIOB->CR2&=~(1<<5);	
-		GPIOB->ODR^=(1<<5);
+		//GPIOB->ODR^=(1<<5);
+		if(temp_adc>512) GPIOB->ODR|=(1<<5);
+		else GPIOB->ODR&=~(1<<5);
 		}
       	 
 	if(b5Hz)
