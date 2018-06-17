@@ -5,6 +5,37 @@
 
 //signed long temp_adc;
 unsigned short temp_adc;
+char start_cnt;
+
+short adc_buff[32][3];
+short adc_buff_[3];
+short adc_buff_instant[3];
+short adc_ch;
+short adc_cnt;
+short adc_sign;
+
+//-----------------------------------------------
+void adc1_hndl(void)
+{
+
+
+GPIOD->DDR&=~(1<<6);
+GPIOD->CR1&=~(1<<6);
+GPIOD->CR2&=~(1<<6);
+
+if(start_cnt>10)
+	{
+	GPIOD->DDR&=~(1<<3);
+	GPIOD->CR1|=(1<<3);
+	GPIOD->CR2&=~(1<<3);
+	}
+	
+GPIOC->DDR&=~(1<<4);
+GPIOC->CR1&=~(1<<4);
+GPIOC->CR2&=~(1<<4);
+
+
+}
 
 //-----------------------------------------------
 void adc1_init(void)
@@ -20,9 +51,12 @@ GPIOD->DDR&=~(1<<6);
 GPIOD->CR1&=~(1<<6);
 GPIOD->CR2&=~(1<<6);
 
-//GPIOC->DDR&=~(1<<4);
-//GPIOC->CR1&=~(1<<4);
-//GPIOC->CR2&=~(1<<4);
+if(start_cnt>10)
+	{
+	GPIOD->DDR&=~(1<<3);
+	GPIOD->CR1|=(1<<3);
+	GPIOD->CR2&=~(1<<3);
+	}
 
 //GPIOB->DDR&=~(1<<7);
 //GPIOB->CR1&=~(1<<7);
@@ -120,12 +154,14 @@ while (1)
 	if(b10Hz)
 		{
 		b10Hz=0;
-		GPIOB->DDR|=(1<<5);
-		GPIOB->CR1&=~(1<<5);
-		GPIOB->CR2&=~(1<<5);	
-		//GPIOB->ODR^=(1<<5);
-		if(temp_adc>512) GPIOB->ODR|=(1<<5);
-		else GPIOB->ODR&=~(1<<5);
+		GPIOB->DDR|=(1<<4);
+		GPIOB->CR1&=~(1<<4);
+		GPIOB->CR2&=~(1<<4);	
+		//GPIOB->ODR^=(1<<4);
+		//if(temp_adc>512) GPIOB->ODR|=(1<<4);
+		//else GPIOB->ODR&=~(1<<4);
+		if(start_cnt>10) GPIOB->ODR|=(1<<4);
+		else GPIOB->ODR&=~(1<<4);
 		}
       	 
 	if(b5Hz)
@@ -133,12 +169,15 @@ while (1)
 		b5Hz=0;
 		
 
-		adc1_init();	
+		//adc1_init();
+		adc1_hndl();		
 		}
       	      	
 	if(b1Hz)
 		{
 		b1Hz=0;
+		if(start_cnt<200)start_cnt++;
+		
 		}
 	};
 
