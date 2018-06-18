@@ -12,11 +12,42 @@ short adc_buff_[3];
 short adc_buff_instant[3];
 short adc_ch;
 short adc_cnt;
-short adc_sign;
+short adc_sign=0;
 
 //-----------------------------------------------
 void adc1_hndl(void)
 {
+short temp_adc;
+
+
+temp_adc=(((short)(ADC1->DRH))*256)+((short)(ADC1->DRL));
+
+adc_buff[adc_cnt][adc_ch]=temp_adc;
+adc_buff_instant[adc_ch]=temp_adc;
+
+if(!adc_sign)adc_buff_[adc_ch]=adc_buff_instant[adc_ch];
+else
+	{
+	if((adc_cnt&0xfffc)==0)	
+		{
+		unsigned short tempUS=0;
+		char i;
+		for(i=0;i<32;i++)
+			{
+			tempUS+=adc_buff[i][adc_ch];
+			}
+		adc_buff_[adc_ch]=tempUS>>5;
+		}
+	}
+if(++adc_ch>=3)
+	{
+	adc_ch=0;
+	if(++adc_cnt>=32)
+		{
+		adc_cnt=0;
+		adc_sign=1;
+		}
+	}
 
 
 GPIOD->DDR&=~(1<<6);
