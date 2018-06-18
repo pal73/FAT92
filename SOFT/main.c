@@ -25,10 +25,10 @@ temp_adc=(((short)(ADC1->DRH))*256)+((short)(ADC1->DRL));
 adc_buff[adc_cnt][adc_ch]=temp_adc;
 adc_buff_instant[adc_ch]=temp_adc;
 
-if(!adc_sign)adc_buff_[adc_ch]=adc_buff_instant[adc_ch];
-else
+/*if(!adc_sign)*/adc_buff_[adc_ch]=adc_buff_instant[adc_ch];
+/*else
 	{
-	if((adc_cnt&0xfffc)==0)	
+	if((adc_cnt&0x0003)==0)	
 		{
 		unsigned short tempUS=0;
 		char i;
@@ -38,7 +38,8 @@ else
 			}
 		adc_buff_[adc_ch]=tempUS>>5;
 		}
-	}
+	}*/
+	
 if(++adc_ch>=3)
 	{
 	adc_ch=0;
@@ -46,6 +47,7 @@ if(++adc_ch>=3)
 		{
 		adc_cnt=0;
 		adc_sign=1;
+		//GPIOB->ODR^=(1<<4);
 		}
 	}
 
@@ -65,6 +67,17 @@ GPIOC->DDR&=~(1<<4);
 GPIOC->CR1&=~(1<<4);
 GPIOC->CR2&=~(1<<4);
 
+ADC1->TDRL=0xff;
+	
+ADC1->CR2=0x08;
+ADC1->CR1=0x40;
+
+if(adc_ch==0)		ADC1->CSR=0x06;
+else if(adc_ch==1)	ADC1->CSR=0x04;
+else if(adc_ch==2)	ADC1->CSR=0x02;
+
+ADC1->CR1|=1;
+ADC1->CR1|=1;
 
 }
 
@@ -191,7 +204,9 @@ while (1)
 		//GPIOB->ODR^=(1<<4);
 		//if(temp_adc>512) GPIOB->ODR|=(1<<4);
 		//else GPIOB->ODR&=~(1<<4);
-		if(start_cnt>10) GPIOB->ODR|=(1<<4);
+		//if(start_cnt>10) GPIOB->ODR|=(1<<4);
+		//else GPIOB->ODR&=~(1<<4);
+		if(adc_buff_[2]>400)GPIOB->ODR|=(1<<4);
 		else GPIOB->ODR&=~(1<<4);
 		}
       	 
