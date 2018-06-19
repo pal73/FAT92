@@ -14,6 +14,24 @@ short adc_ch;
 short adc_cnt;
 short adc_sign=0;
 
+signed short temper;
+signed short temper_ust_water;
+signed short temper_ust_air;
+
+//-----------------------------------------------
+void matemath(void)
+{
+long tempL;
+temper_ust_water=5+((adc_buff_[0]*10)/128);
+temper_ust_air=5+((adc_buff_[0])/34);
+tempL=0;
+tempL=(long)adc_buff_[2];
+tempL*=500L;
+tempL/=1023L;
+tempL-=273L;
+temper=(short)tempL;
+}
+
 //-----------------------------------------------
 void adc1_hndl(void)
 {
@@ -224,6 +242,7 @@ while (1)
 		b1Hz=0;
 		if(start_cnt<200)start_cnt++;
 		
+		matemath();
 		}
 	};
 
