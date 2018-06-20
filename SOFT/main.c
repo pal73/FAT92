@@ -33,6 +33,39 @@ temper=(short)tempL;
 }
 
 //-----------------------------------------------
+void out_hndl(void)
+{
+GPIOB->DDR|=(1<<4);			//Светодиод
+GPIOB->CR1&=~(1<<4);
+GPIOB->CR2&=~(1<<4);
+
+GPIOB->DDR|=(1<<5);			//Оптрон
+GPIOB->CR1&=~(1<<5);
+GPIOB->CR2&=~(1<<5);
+
+if(adc_buff_[1]>900)		//Переключатель в среднем положении, выход выключен
+	{
+	GPIOB->ODR^=(1<<4);	
+	GPIOB->ODR|=(1<<5);	
+	}
+else if(adc_buff_[1]<200)		//Переключатель в положении "Вода"
+	{
+	//GPIOB->ODR&=(1<<4);	
+	if(temper>=temper_ust_water)
+		{
+		GPIOB->ODR|=(1<<5);	
+		//GPIOB->ODR|=(1<<4);
+		}
+	else if(temper<temper_ust_water)
+		{
+		GPIOB->ODR&=~(1<<5);
+		//GPIOB->ODR&=~(1<<4);
+		}
+	}	
+GPIOB->ODR^=(1<<4);	
+}
+
+//-----------------------------------------------
 void adc1_hndl(void)
 {
 short temp_adc;
@@ -205,7 +238,7 @@ temp_adc=(((signed long)(ADC1->DRH))*256)+((signed long)(ADC1->DRL));
 
 main()
 {
-CLK->CKDIVR=0;
+CLK->CKDIVR=4;
 
 t4_init();
 
@@ -216,16 +249,14 @@ while (1)
 	if(b10Hz)
 		{
 		b10Hz=0;
-		GPIOB->DDR|=(1<<4);
-		GPIOB->CR1&=~(1<<4);
-		GPIOB->CR2&=~(1<<4);	
+	
 		//GPIOB->ODR^=(1<<4);
 		//if(temp_adc>512) GPIOB->ODR|=(1<<4);
 		//else GPIOB->ODR&=~(1<<4);
 		//if(start_cnt>10) GPIOB->ODR|=(1<<4);
 		//else GPIOB->ODR&=~(1<<4);
-		if(adc_buff_[2]>400)GPIOB->ODR|=(1<<4);
-		else GPIOB->ODR&=~(1<<4);
+		/*if(adc_buff_[2]>620)GPIOB->ODR|=(1<<4);
+		else GPIOB->ODR&=~(1<<4);*/
 		}
       	 
 	if(b5Hz)
@@ -243,6 +274,7 @@ while (1)
 		if(start_cnt<200)start_cnt++;
 		
 		matemath();
+		out_hndl();
 		}
 	};
 
