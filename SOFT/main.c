@@ -50,7 +50,7 @@ if(adc_buff_[1]>900)		//Переключатель в среднем положении, выход выключен
 	}
 else if(adc_buff_[1]<200)		//Переключатель в положении "Вода"
 	{
-	//GPIOB->ODR&=(1<<4);	
+	GPIOB->ODR&=~(1<<4);	
 	if(temper>=temper_ust_water)
 		{
 		GPIOB->ODR|=(1<<5);	
@@ -62,7 +62,22 @@ else if(adc_buff_[1]<200)		//Переключатель в положении "Вода"
 		//GPIOB->ODR&=~(1<<4);
 		}
 	}	
-GPIOB->ODR^=(1<<4);	
+	
+else if((adc_buff_[1]<800) && (adc_buff_[1]>300))		//Переключатель в положении "Воздух"
+	{
+	GPIOB->ODR|=(1<<4);	
+	if(temper>=temper_ust_air)
+		{
+		GPIOB->ODR|=(1<<5);	
+		//GPIOB->ODR|=(1<<4);
+		}
+	else if(temper<temper_ust_air)
+		{
+		GPIOB->ODR&=~(1<<5);
+		//GPIOB->ODR&=~(1<<4);
+		}
+	}	
+//GPIOB->ODR^=(1<<4);	
 }
 
 //-----------------------------------------------
@@ -76,8 +91,8 @@ temp_adc=(((short)(ADC1->DRH))*256)+((short)(ADC1->DRL));
 adc_buff[adc_cnt][adc_ch]=temp_adc;
 adc_buff_instant[adc_ch]=temp_adc;
 
-/*if(!adc_sign)*/adc_buff_[adc_ch]=adc_buff_instant[adc_ch];
-/*else
+if(!adc_sign)adc_buff_[adc_ch]=adc_buff_instant[adc_ch];
+else
 	{
 	if((adc_cnt&0x0003)==0)	
 		{
@@ -89,7 +104,7 @@ adc_buff_instant[adc_ch]=temp_adc;
 			}
 		adc_buff_[adc_ch]=tempUS>>5;
 		}
-	}*/
+	}
 	
 if(++adc_ch>=3)
 	{
