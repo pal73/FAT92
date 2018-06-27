@@ -18,6 +18,125 @@ signed short temper;
 signed short temper_ust_water;
 signed short temper_ust_air;
 
+@near short led_drv_cnt;
+@near short led_drv_dig1,led_drv_pause1, dig1;
+@near short led_drv_dig2,led_drv_pause2, dig2;
+@near short led_drv_dig3,led_drv_pause3, dig3;
+@near short led_drv_dig4,led_drv_pause4, dig4;
+@near short led_drv_dig5,led_drv_pause5, dig5;
+@near short led_drv_dig6,led_drv_pause6, dig6;
+//-----------------------------------------------
+void led_drv(void)
+{
+GPIOB->DDR|=(1<<4);			//Светодиод
+GPIOB->CR1&=~(1<<4);
+GPIOB->CR2&=~(1<<4);
+
+led_drv_cnt++;
+
+if(led_drv_cnt<=5)			GPIOB->ODR&=~(1<<4);
+else if(led_drv_cnt<=10)	GPIOB->ODR|=(1<<4);
+else if(led_drv_cnt%2)		GPIOB->ODR|=(1<<4);
+else
+	{
+	if(led_drv_dig1)
+		{
+		led_drv_dig1--;
+		GPIOB->ODR&=~(1<<4);
+		}		
+	else if(led_drv_pause1)
+		{
+		led_drv_pause1--;
+		GPIOB->ODR|=(1<<4);
+		}
+	else if(led_drv_dig2)
+		{
+		led_drv_dig2--;
+		GPIOB->ODR&=~(1<<4);
+		}		
+	else if(led_drv_pause2)
+		{
+		led_drv_pause2--;
+		GPIOB->ODR|=(1<<4);
+		}	
+	else if(led_drv_dig3)
+		{
+		led_drv_dig3--;
+		GPIOB->ODR&=~(1<<4);
+		}		
+	else if(led_drv_pause3)
+		{
+		led_drv_pause3--;
+		GPIOB->ODR|=(1<<4);
+		}
+	else if(led_drv_dig4)
+		{
+		led_drv_dig4--;
+		GPIOB->ODR&=~(1<<4);
+		}		
+	else if(led_drv_pause4)
+		{
+		led_drv_pause4--;
+		GPIOB->ODR|=(1<<4);
+		}	
+	else if(led_drv_dig5)
+		{
+		led_drv_dig5--;
+		GPIOB->ODR&=~(1<<4);
+		}		
+	else if(led_drv_pause5)
+		{
+		led_drv_pause5--;
+		GPIOB->ODR|=(1<<4);
+		}	
+	else if(led_drv_dig6)
+		{
+		led_drv_dig6--;
+		GPIOB->ODR&=~(1<<4);
+		}		
+	else if(led_drv_pause6)
+		{
+		led_drv_pause6--;
+		GPIOB->ODR|=(1<<4);
+		}
+	else if(!led_drv_pause6)
+		{
+		led_drv_cnt=0;
+		if(dig1)
+			{
+			led_drv_dig1=dig1;	
+			led_drv_pause1=3;
+			}
+		if(dig2)
+			{
+			led_drv_dig2=dig2;	
+			led_drv_pause2=3;
+			}			
+		if(dig3)
+			{
+			led_drv_dig3=dig3;	
+			led_drv_pause3=3;
+			}
+		if(dig4)
+			{
+			led_drv_dig4=dig4;	
+			led_drv_pause4=3;
+			}	
+		if(dig5)
+			{
+			led_drv_dig5=dig5;	
+			led_drv_pause5=3;
+			}
+		if(dig6)
+			{
+			led_drv_dig6=dig6;	
+			led_drv_pause6=3;
+			}			
+		}
+	}
+
+}
+
 //-----------------------------------------------
 void matemath(void)
 {
@@ -35,9 +154,7 @@ temper=(short)tempL;
 //-----------------------------------------------
 void out_hndl(void)
 {
-GPIOB->DDR|=(1<<4);			//Светодиод
-GPIOB->CR1&=~(1<<4);
-GPIOB->CR2&=~(1<<4);
+
 
 GPIOB->DDR|=(1<<5);			//Оптрон
 GPIOB->CR1&=~(1<<5);
@@ -45,12 +162,12 @@ GPIOB->CR2&=~(1<<5);
 
 if(adc_buff_[1]>900)		//Переключатель в среднем положении, выход выключен
 	{
-	GPIOB->ODR^=(1<<4);	
+	//GPIOB->ODR^=(1<<4);	
 	GPIOB->ODR|=(1<<5);	
 	}
 else if(adc_buff_[1]<200)		//Переключатель в положении "Вода"
 	{
-	GPIOB->ODR&=~(1<<4);	
+	//GPIOB->ODR&=~(1<<4);	
 	if(temper>=temper_ust_water)
 		{
 		GPIOB->ODR|=(1<<5);	
@@ -65,7 +182,7 @@ else if(adc_buff_[1]<200)		//Переключатель в положении "Вода"
 	
 else if((adc_buff_[1]<800) && (adc_buff_[1]>300))		//Переключатель в положении "Воздух"
 	{
-	GPIOB->ODR|=(1<<4);	
+	//GPIOB->ODR|=(1<<4);	
 	if(temper>=temper_ust_air)
 		{
 		GPIOB->ODR|=(1<<5);	
@@ -278,7 +395,7 @@ while (1)
 		{
 		b5Hz=0;
 		
-
+		led_drv();
 		//adc1_init();
 		adc1_hndl();		
 		}
