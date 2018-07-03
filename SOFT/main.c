@@ -19,12 +19,12 @@ signed short temper_ust_water;
 signed short temper_ust_air;
 
 @near short led_drv_cnt;
-@near short led_drv_dig1,led_drv_pause1, dig1;
-@near short led_drv_dig2,led_drv_pause2, dig2;
-@near short led_drv_dig3,led_drv_pause3, dig3;
-@near short led_drv_dig4,led_drv_pause4, dig4;
-@near short led_drv_dig5,led_drv_pause5, dig5;
-@near short led_drv_dig6,led_drv_pause6, dig6;
+@near short led_drv_dig1,led_drv_pause1, dig1=3;
+@near short led_drv_dig2,led_drv_pause2, dig2=5;
+@near short led_drv_dig3,led_drv_pause3, dig3=2;
+@near short led_drv_dig4,led_drv_pause4, dig4=6;
+@near short led_drv_dig5,led_drv_pause5, dig5=8;
+@near short led_drv_dig6,led_drv_pause6, dig6=10;
 //-----------------------------------------------
 void led_drv(void)
 {
@@ -34,8 +34,8 @@ GPIOB->CR2&=~(1<<4);
 
 led_drv_cnt++;
 
-if(led_drv_cnt<=5)			GPIOB->ODR&=~(1<<4);
-else if(led_drv_cnt<=10)	GPIOB->ODR|=(1<<4);
+if(led_drv_cnt<=7)			GPIOB->ODR&=~(1<<4);
+else if(led_drv_cnt<=12)		GPIOB->ODR|=(1<<4);
 else if(led_drv_cnt%2)		GPIOB->ODR|=(1<<4);
 else
 	{
@@ -141,6 +141,7 @@ else
 void matemath(void)
 {
 long tempL;
+short tempS;
 temper_ust_water=5+((adc_buff_[0]*10)/128);
 temper_ust_air=5+((adc_buff_[0])/34);
 tempL=0;
@@ -149,6 +150,34 @@ tempL*=500L;
 tempL/=1023L;
 tempL-=273L;
 temper=(short)tempL;
+
+tempS=adc_buff_[0];
+if(tempS>1000)tempS=999;
+
+dig1=tempS/100;
+if(dig1==0)dig1=10;
+
+tempS=tempS%100;
+dig2=tempS/10;
+if(dig2==0)dig2=10;
+
+tempS=tempS%10;
+dig3=tempS;
+if(dig3==0)dig3=10;
+
+tempS=temper_ust_water;
+if(tempS>1000)tempS=999;
+
+dig4=tempS/100;
+if(dig4==0)dig4=10;
+
+tempS=tempS%100;
+dig5=tempS/10;
+if(dig5==0)dig5=10;
+
+tempS=tempS%10;
+dig6=tempS;
+if(dig6==0)dig6=10;
 }
 
 //-----------------------------------------------
