@@ -25,6 +25,8 @@ signed short temper_ust_air;
 @near short led_drv_dig4,led_drv_pause4, dig4=6;
 @near short led_drv_dig5,led_drv_pause5, dig5=8;
 @near short led_drv_dig6,led_drv_pause6, dig6=10;
+
+@near char logic_switch;
 //-----------------------------------------------
 void led_drv(void)
 {
@@ -152,6 +154,40 @@ tempL-=273L;
 temper=(short)tempL;
 
 tempS=adc_buff_[0];
+//if(logic_switch==1)tempS=temper_ust_water;
+//if(logic_switch==2)tempS=temper_ust_air;
+
+tempS=temper_ust_water;
+if(tempS>100)tempS=99;
+
+dig1=tempS/10;
+if(dig1==0)dig1=10;
+
+tempS=tempS%10;
+dig2=tempS;
+if(dig2==0)dig2=10;
+
+tempS=temper_ust_air;
+if(tempS>100)tempS=99;
+
+dig3=tempS/10;
+if(dig3==0)dig3=10;
+
+tempS=tempS%10;
+dig4=tempS;
+if(dig4==0)dig4=10;
+
+tempS=temper;
+if(tempS>100)tempS=99;
+
+dig5=tempS/10;
+if(dig5==0)dig5=10;
+
+tempS=tempS%10;
+dig6=tempS;
+if(dig6==0)dig6=10;
+
+/*
 if(tempS>1000)tempS=999;
 
 dig1=tempS/100;
@@ -178,7 +214,7 @@ if(dig5==0)dig5=10;
 
 tempS=tempS%10;
 dig6=tempS;
-if(dig6==0)dig6=10;
+if(dig6==0)dig6=10;*/
 }
 
 //-----------------------------------------------
@@ -194,6 +230,7 @@ if(adc_buff_[1]>900)		//Переключатель в среднем положении, выход выключен
 	{
 	//GPIOB->ODR^=(1<<4);	
 	GPIOB->ODR|=(1<<5);	
+	logic_switch=0;
 	}
 else if(adc_buff_[1]<200)		//Переключатель в положении "Вода"
 	{
@@ -208,6 +245,7 @@ else if(adc_buff_[1]<200)		//Переключатель в положении "Вода"
 		GPIOB->ODR&=~(1<<5);
 		//GPIOB->ODR&=~(1<<4);
 		}
+	logic_switch=1;
 	}	
 	
 else if((adc_buff_[1]<800) && (adc_buff_[1]>300))		//Переключатель в положении "Воздух"
@@ -223,6 +261,7 @@ else if((adc_buff_[1]<800) && (adc_buff_[1]>300))		//Переключатель в положении "
 		GPIOB->ODR&=~(1<<5);
 		//GPIOB->ODR&=~(1<<4);
 		}
+	logic_switch=2;
 	}	
 //GPIOB->ODR^=(1<<4);	
 }
