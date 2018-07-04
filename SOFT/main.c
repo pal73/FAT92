@@ -166,6 +166,7 @@ dig3=tempS;
 if(dig3==0)dig3=10;
 
 tempS=temper_ust_water;
+tempS=temper;
 if(tempS>1000)tempS=999;
 
 dig4=tempS/100;
