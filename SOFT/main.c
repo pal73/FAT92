@@ -159,7 +159,8 @@ tempS=adc_buff_[0];
 //if(logic_switch==1)tempS=temper_ust_water;
 //if(logic_switch==2)tempS=temper_ust_air;
 
-tempS=temper_ust_water;
+//tempS=temper_ust_water;
+tempS=out_cnt;
 if(tempS>100)tempS=99;
 
 dig1=tempS/10;
@@ -240,15 +241,15 @@ else if(adc_buff_[1]<200)		//Переключатель в положении "Вода"
 		{
 		//GPIOB->ODR|=(1<<5);	
 		//GPIOB->ODR|=(1<<4);
-		if(out_cnt<20)out_cnt++;
-		else out_cnt=20;
+		if(out_cnt>0)out_cnt--;
+		else out_cnt=0;
 		}
 	else if(temper<temper_ust_water)
 		{
 		//GPIOB->ODR&=~(1<<5);
 		//GPIOB->ODR&=~(1<<4);
-		if(out_cnt>0)out_cnt--;
-		else out_cnt=0;
+		if(out_cnt<20)out_cnt++;
+		else out_cnt=20;
 		}
 	logic_switch=1;
 	
@@ -261,13 +262,18 @@ else if((adc_buff_[1]<800) && (adc_buff_[1]>300))		//Переключатель в положении "
 	//GPIOB->ODR|=(1<<4);	
 	if(temper>=temper_ust_air)
 		{
-		GPIOB->ODR|=(1<<5);	
+		//GPIOB->ODR|=(1<<5);	
 		//GPIOB->ODR|=(1<<4);
+		if(out_cnt>0)out_cnt--;
+		else out_cnt=0;	
 		}
 	else if(temper<temper_ust_air)
 		{
-		GPIOB->ODR&=~(1<<5);
+		//GPIOB->ODR&=~(1<<5);
 		//GPIOB->ODR&=~(1<<4);
+		if(out_cnt<20)out_cnt++;
+		else out_cnt=20;
+	
 		}
 	logic_switch=2;
 	if(out_cnt>=19)out_switch=1;
